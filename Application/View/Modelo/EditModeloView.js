@@ -1,0 +1,85 @@
+/**
+ * Created by ANGEL on 23/05/14.
+ */
+
+Ext.define('appApplication.view.Modelo.EditModeloView',{
+    extend: 'Ext.window.Window',
+    id:'wdwEditModeloView',
+    name:'wdwEditModeloView',
+    alias:'widget.EditModelo',
+    title:'Editar Area',
+    layout:'fit',
+    height:200,
+    width:400,
+    resizable:false,
+    autoShow:true,
+    modal:true,
+    initComponent:function(){
+        this.items=[{
+            xtype:'form',
+            id:'frmEditModeloView',
+            name:'frmEditModeloView',
+            bodyPadding:5,
+            defaults:{labelWidth:150,width:300},
+            items:[{
+                xtype:'textfield',
+                id:'txtPkModelo',
+                name:'idModelo',
+                hidden:true
+            },{
+                xtype:'combobox',
+                id:'cmbFkMarca',
+                name:'idMarca',
+                fieldLabel:'Marca',
+                store:'Marca.ListMarcaAllStore',
+                displayField:'nombreMarca',
+                valueField:'idMarca',
+                emptyText:'Seleccione Modulo',
+                width:300,
+                editable:false
+            },{
+                xtype:'textfield',
+                id:'txtNombreModelo',
+                name:'nombreModelo',
+                fieldLabel:'Modelo',
+                y:20,
+                x:10,
+                labelWidth:80,
+                width:300,
+                maxLength:45
+            },{
+                xtype:'checkbox',
+                id:'txtEstadoRegistro',
+                fieldLabel:'Habilitar',
+                name:'estadoRegistro',
+                y:30,
+                x:10,
+                labelWidth:80
+
+            }]
+        }],
+            this.buttons=[{
+                text:'Guardar',
+                id:'btnSaveModelo',
+                name:'btnSaveModelo',
+                iconCls:'Save',
+                action:'saveModelo'
+            },{
+                text:'Limpiar',
+                id:'btnResetModelo',
+                name:'btnResetModelo',
+                iconCls:'clear',
+                handler:function(){
+                    Ext.getCmp('frmEditModeloView').getForm().reset();
+                }
+            },{
+                text:'Cancelar',
+                iconCls:'delete',
+                handler:function(){
+                    Ext.getCmp('wdwEditModeloView').close();
+
+                }
+            }];
+        this.callParent(arguments);
+    }
+});

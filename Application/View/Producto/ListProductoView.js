@@ -1,0 +1,106 @@
+/**
+ * Created by ANGEL on 29/05/14.
+ */
+Ext.define('appApplication.view.Producto.ListProductoView',{
+    extend:'Ext.grid.Panel',
+    id:'grdListProductoView',
+    name:'grdListProductoView',
+    alias:'widget.ListProductoView',
+    //store:'Producto.ProductoStore',
+    title:'Listado de Producto',
+    border:false,
+    listeners:{
+        'selectionchange':function(view,record){
+            Ext.getCmp('btnEditProducto').setDisabled(record.length==0);
+            Ext.getCmp('btnDeleteProducto').setDisabled(record.length==0);
+        }
+    },
+    initComponent:function(){
+        this.columns=[{header:'Id',dataIndex:'idProducto'},
+            {header:'Producto',dataIndex:'nombreProducto'},
+            {header:'Fecha de Registro',dataIndex:'fechaRegistro'},
+            {header:'Estado',dataIndex:'estadoRegistro'}],
+            this.dockedItems=[{
+                xtype:'toolbar',
+                doctk:'top',
+                frame:true,
+                items:[{
+                    xtype:'button',
+                    id:'btnAddProducto',
+                    name:'btnAddProducto',
+                    text:'Nuevo',
+                    action:'addProducto',
+                    iconCls:'Add'
+                },'-',{
+                    xtype:'button',
+                    id:'btnEditProducto',
+                    name:'btnEditProducto',
+                    text:'Editar',
+                    action:'editProducto',
+                    iconCls:'Edit',
+                    disabled:true
+                },'-',{
+                    xtype:'button',
+                    id:'btnDeleteProducto',
+                    name:'btnDeleteProducto',
+                    text:'Eliminar',
+                    action:'deleteProducto',
+                    iconCls:'Delete',
+                    disabled:true
+                },'-',{
+                    xtype:'textfield',
+                    id:'txtSearchStringProducto',
+                    name:'txtSearchStringProducto',
+                    emptyText:'Nombre de Producto',
+                    width:400
+                },{
+                    xtype:'button',
+                    id:'btnSearchProducto',
+                    name:'btnSearchProducto',
+                    text:'Buscar',
+                    handler:function(){
+                        if(Ext.getCmp('txtSearchStringProducto').getValue()!=='')
+                            Ext.getCmp('grdListProductoView').getStore().loadPage(1);
+                    }
+                },'-',{
+                    xtype:'button',
+                    id:'btnDisplayAllProducto',
+                    name:'btnDisplayAllProducto',
+                    text:'Mostrar Todos',
+                    handler:function(){
+                        Ext.getCmp('txtSearchStringProducto').setValue('');
+                        Ext.getCmp('grdListProductoView').getStore().loadPage(1);
+                    }
+                },'-',{
+                    xtype:'button',
+                    text:'Reporte',
+                    id:'btnReportProducto',
+                    name:'btnReportProducto',
+                    action:'reportProducto'
+
+                },{
+                    xtype:'checkbox',
+                    id:'chkShowInactiveProducto',
+                    name:'chkShowInactiveProducto',
+                    fieldLabel:'Inactivos',
+                    handler:function(){
+                        Ext.getCmp('btnAddProducto').setDisabled(this.getValue());
+                        Ext.getCmp('grdListProductoView').getStore().loadPage(1);
+                    }
+                }]
+            },{
+                xtype:'pagingtoolbar',
+                //store:'Producto.ProductoStore',
+                dock:'bottom',
+                displayInfo:true
+            }]
+        this.callParent(arguments);
+        this.store.on('beforeload',function(store){
+            store.proxy.extraParams = {
+                chkShowInactive:Ext.getCmp('chkShowInactiveProducto').getValue()===true?1:0,
+                query:Ext.getCmp('txtSearchStringProducto').getValue()
+            };
+        });
+        this.store.load();
+    }
+});

@@ -1,0 +1,107 @@
+/**
+ * Created by ANGEL on 23/05/14.
+ */
+Ext.define('appApplication.view.Modelo.ListModeloView',{
+    extend:'Ext.grid.Panel',
+    id:'grdListModeloView',
+    name:'grdListModeloView',
+    alias:'widget.ListModeloView',
+    store:'Modelo.ModeloStore',
+    title:'Listado de Modelo',
+    border:false,
+    listeners:{
+        'selectionchange':function(view,record){
+            Ext.getCmp('btnEditModelo').setDisabled(record.length==0);
+            Ext.getCmp('btnDeleteModelo').setDisabled(record.length==0);
+        }
+    },
+    initComponent:function(){
+        this.columns=[{header:'Id',dataIndex:'idModelo'},
+            {header:'Modelo',dataIndex:'nombreModelo'},
+            {header:'Marca',dataIndex:'nombreMarca'},
+            {header:'Fecha de Registro',dataIndex:'fechaRegistro'},
+            {header:'Estado',dataIndex:'estadoRegistro'}],
+            this.dockedItems=[{
+                xtype:'toolbar',
+                doctk:'top',
+                frame:true,
+                items:[{
+                    xtype:'button',
+                    id:'btnAddModelo',
+                    name:'btnAddModelo',
+                    text:'Nuevo',
+                    action:'addModelo',
+                    iconCls:'Add'
+                },'-',{
+                    xtype:'button',
+                    id:'btnEditModelo',
+                    name:'btnEditModelo',
+                    text:'Editar',
+                    action:'editModelo',
+                    iconCls:'Edit',
+                    disabled:true
+                },'-',{
+                    xtype:'button',
+                    id:'btnDeleteModelo',
+                    name:'btnDeleteModelo',
+                    text:'Eliminar',
+                    action:'deleteModelo',
+                    iconCls:'Delete',
+                    disabled:true
+                },'-',{
+                    xtype:'textfield',
+                    id:'txtSearchStringModelo',
+                    name:'txtSearchStringModelo',
+                    emptyText:'Nombre de Modelo',
+                    width:400
+                },{
+                    xtype:'button',
+                    id:'btnSearchModelo',
+                    name:'btnSearchModelo',
+                    text:'Buscar',
+                    handler:function(){
+                        if(Ext.getCmp('txtSearchStringModelo').getValue()!=='')
+                            Ext.getCmp('grdListModeloView').getStore().loadPage(1);
+                    }
+                },'-',{
+                    xtype:'button',
+                    id:'btnDisplayAllModelo',
+                    name:'btnDisplayAllModelo',
+                    text:'Mostrar Todos',
+                    handler:function(){
+                        Ext.getCmp('txtSearchStringModelo').setValue('');
+                        Ext.getCmp('grdListModeloView').getStore().loadPage(1);
+                    }
+                },'-',{
+                    xtype:'button',
+                    text:'Reporte',
+                    id:'btnReportModelo',
+                    name:'btnReportModelo',
+                    action:'reportModelo'
+
+                },{
+                    xtype:'checkbox',
+                    id:'chkShowInactiveModelo',
+                    name:'chkShowInactiveModelo',
+                    fieldLabel:'Inactivos',
+                    handler:function(){
+                        Ext.getCmp('btnAddModelo').setDisabled(this.getValue());
+                        Ext.getCmp('grdListModeloView').getStore().loadPage(1);
+                    }
+                }]
+            },{
+                xtype:'pagingtoolbar',
+                store:'Modelo.ModeloStore',
+                dock:'bottom',
+                displayInfo:true
+            }]
+        this.callParent(arguments);
+        this.store.on('beforeload',function(store){
+            store.proxy.extraParams = {
+                chkShowInactive:Ext.getCmp('chkShowInactiveModelo').getValue()===true?1:0,
+                query:Ext.getCmp('txtSearchStringModelo').getValue()
+            };
+        });
+        this.store.load();
+    }
+});
